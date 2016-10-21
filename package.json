@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "hapi": "^15.1.1",
+    "inert": "^4.0.2"
+  },
+  "scripts": {
+    "start": "node app"
+  }
+}
