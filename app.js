@@ -6,6 +6,7 @@ const path = require('path');
 
 const dataDir = path.join(__dirname, '/data');
 
+// create a new server //
 const server = new Hapi.Server();
 server.connection({
     port: 9090, routes: {
@@ -13,35 +14,16 @@ server.connection({
       origin: ['*']
     }
   }});
-//
-// server.route({
-//   method: 'GET',
-//   path: '/employees',
-//   handler: function (request, reply) {
-//     //console.log()
-//     reply.file('data/employees.json');
-//   }
-// });
-//
 
+// read json files, returns the data //
 const readJSON = (file) => {
   console.log('file to read', file);
-
-  // fs.readFile(file, 'utf8', (err, data) => {
-  //   if (err) throw err;
-  //
-  //   //console.log(JSON.parse(data));
-  //
-  //   var obj = JSON.parse(data);
-  //   //console.log('obj==>', obj.EmployeesList);
-  //
-  //   return obj.EmployeesList;
-  // });
 
   var obj = JSON.parse(fs.readFileSync(file, 'utf8'));
   return obj.EmployeesList;
 }
 
+// define the routes //
 server.register(require('inert'), (err) => {
 
     if (err) {
@@ -85,13 +67,22 @@ server.register(require('inert'), (err) => {
 
     server.route({
         method: 'GET',
+        path: '/project',
+        handler: function (request, reply) {
+            reply.file('./data/project.json');
+        }
+    });
+
+    server.route({
+        method: 'GET',
         path: '/project/{id}',
         handler: function (request, reply) {
 
           let employees = readJSON('./data/employees.json');
           let projects = readJSON('./data/projects.json');
 
-          //console.log('employees==>', employees);
+          console.log('employees==>', employees);
+          console.log('employees==>', projects);
           //console.log(request.params.id, employees);
 
           if (request.params.id) {
@@ -103,6 +94,8 @@ server.register(require('inert'), (err) => {
         }
     });
 });
+
+// start the server //
 server.start((err) => {
     if (err) throw err;
     console.log(`Server running at: ${server.info.uri}`);
