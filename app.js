@@ -18,20 +18,19 @@ server.connection({
 // read json files, returns the data //
 const readJSON = (file) => {
   console.log('file to read', file);
-
   var obj = JSON.parse(fs.readFileSync(file, 'utf8'));
-
-  console.log('KEYS ==>',Object.keys(obj)[0]);
+  //console.log('KEYS ==>',Object.keys(obj)[0]);
   return obj[Object.keys(obj)[0]];
 }
 
-const find = (obj, item) => {
-  console.log('==> find', obj, item);
-  let match = obj.filter(function(item){
-      return obj.empID === item;
+const find = (obj, id, key) => {
+  console.log('==> find', obj, id, key);
+  return obj.filter(function(item){
+      if (id == item[key]) {
+        console.log('matched ==> ', id, item[key]);
+        return item;
+      }
   });
-
-  return match;
 }
 
 // define the routes //
@@ -64,14 +63,12 @@ server.register(require('inert'), (err) => {
 
           let employees = readJSON('./data/employees.json');
 
-          //console.log('employees==>', employees);
-          //console.log(request.params.id, employees);
+          let result = find(employees, request.params.id, 'empID');
+
+          console.log('result ==> ', result);
 
           if (request.params.id) {
-            if (employees.length <= request.params.id) {
-              return reply('No quote found.').code(404);
-            }
-            return reply(employees[request.params.id]);
+            return reply(result);
           }
         }
     });
@@ -89,20 +86,39 @@ server.register(require('inert'), (err) => {
         path: '/project/{id}',
         handler: function (request, reply) {
 
-          let employees = readJSON('./data/employees.json');
           let projects = readJSON('./data/projects.json');
 
-          console.log('returned ==>', find(employees, request.params.id));
+          let result = find(projects, request.params.id, 'projectID');
 
-          //console.log('employees==>', employees);
-          //console.log('projects==>', projects);
-          //console.log(request.params.id, employees);
+          //console.log('result ==> ', result);
 
           if (request.params.id) {
-            if (employees.length <= request.params.id) {
-              return reply('No quote found.').code(404);
-            }
-            return reply(employees[request.params.id]);
+            return reply(result);
+          }
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/budget',
+        handler: function (request, reply) {
+            reply.file('./data/budget.json');
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/budget/{id}',
+        handler: function (request, reply) {
+
+          let projects = readJSON('./data/budget.json');
+
+          let result = find(projects, request.params.id, 'code');
+
+          //console.log('result ==> ', result);
+
+          if (request.params.id) {
+            return reply(result);
           }
         }
     });
