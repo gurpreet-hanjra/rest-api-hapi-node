@@ -20,7 +20,18 @@ const readJSON = (file) => {
   console.log('file to read', file);
 
   var obj = JSON.parse(fs.readFileSync(file, 'utf8'));
-  return obj.EmployeesList;
+
+  console.log('KEYS ==>',Object.keys(obj)[0]);
+  return obj[Object.keys(obj)[0]];
+}
+
+const find = (obj, item) => {
+  console.log('==> find', obj, item);
+  let match = obj.filter(function(item){
+      return obj.empID === item;
+  });
+
+  return match;
 }
 
 // define the routes //
@@ -69,7 +80,7 @@ server.register(require('inert'), (err) => {
         method: 'GET',
         path: '/project',
         handler: function (request, reply) {
-            reply.file('./data/project.json');
+            reply.file('./data/projects.json');
         }
     });
 
@@ -81,8 +92,10 @@ server.register(require('inert'), (err) => {
           let employees = readJSON('./data/employees.json');
           let projects = readJSON('./data/projects.json');
 
-          console.log('employees==>', employees);
-          console.log('employees==>', projects);
+          console.log('returned ==>', find(employees, request.params.id));
+
+          //console.log('employees==>', employees);
+          //console.log('projects==>', projects);
           //console.log(request.params.id, employees);
 
           if (request.params.id) {
