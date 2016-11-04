@@ -6,6 +6,9 @@ const path = require('path');
 
 const dataDir = path.join(__dirname, '/data');
 
+// smiliyes
+const smile = '\uD83D\uDE00';
+
 // create a new server //
 const server = new Hapi.Server();
 server.connection({
@@ -127,5 +130,5 @@ server.register(require('inert'), (err) => {
 // start the server //
 server.start((err) => {
     if (err) throw err;
-    console.log(`Server running at: ${server.info.uri}`);
+    console.log(`Server running at: ${server.info.uri} ${smile}`);
 });
